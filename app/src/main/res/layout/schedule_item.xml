@@ -1,0 +1,175 @@
+<!-- res/layout/schedule_item.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="#EEEEEE"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <!-- Chọn van tưới -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn van tưới:" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- 8 checkbox tương ứng với 8 van -->
+        <CheckBox
+            android:id="@+id/zone1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1" />
+
+        <CheckBox
+            android:id="@+id/zone2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2" />
+
+        <CheckBox
+            android:id="@+id/zone3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3" />
+
+        <CheckBox
+            android:id="@+id/zone4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4" />
+        <!-- Tạo thêm zone5 - zone8 tương tự nếu đủ chỗ -->
+    </LinearLayout>
+
+    <!-- Giờ bắt đầu -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Thời gian bắt đầu:" />
+
+<!--    <TimePicker-->
+<!--        android:id="@+id/timePickerStart"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:is24HourView="true"-->
+<!--        android:timePickerMode="spinner" />-->
+
+    <!-- Thời gian tưới -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tưới trong bao lâu (phút):" />
+
+    <EditText
+        android:id="@+id/editDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number" />
+
+    <!-- Ngày lặp -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lặp lại các ngày:" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/checkMon"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:text="T2" />
+
+        <CheckBox
+            android:id="@+id/checkTue"
+            android:text="T3"
+            android:layout_width="5dp"
+            android:layout_height="5dp"/>
+
+        <CheckBox
+            android:id="@+id/checkWed"
+            android:text="T4"
+            android:layout_width="5dp"
+            android:layout_height="5dp"/>
+
+        <CheckBox
+            android:id="@+id/checkThu"
+            android:text="T5"
+            android:layout_width="5dp"
+            android:layout_height="5dp"/>
+
+        <CheckBox
+            android:id="@+id/checkFri"
+            android:text="T6"
+            android:layout_width="5dp"
+            android:layout_height="5dp"/>
+
+        <CheckBox
+            android:id="@+id/checkSat"
+            android:text="T7"
+            android:layout_width="5dp"
+            android:layout_height="5dp"/>
+
+        <CheckBox
+            android:id="@+id/checkSun"
+            android:text="CN"
+            android:layout_width="5dp"
+            android:layout_height="5dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+        <CheckBox
+            android:id="@+id/checkZone1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1" />
+
+        <CheckBox
+            android:id="@+id/checkZone2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2" />
+        <CheckBox
+            android:id="@+id/checkZone3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3" />
+
+        <CheckBox
+            android:id="@+id/checkZone4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4" />
+        <CheckBox
+            android:id="@+id/checkZone5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5" />
+
+        <CheckBox
+            android:id="@+id/checkZone6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6" />
+        <CheckBox
+            android:id="@+id/checkZone7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7" />
+
+        <CheckBox
+            android:id="@+id/checkZone8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8" />
+    </LinearLayout>
+</LinearLayout>
