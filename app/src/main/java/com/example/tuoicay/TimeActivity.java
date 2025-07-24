@@ -3,26 +3,17 @@ package com.example.tuoicay;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TimePicker;
-import android.widget.Toast;
-
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TimeActivity extends AppCompatActivity {
-    Button btnAddSchedule;
-    Button btnSaveSchedule;
+
+    Button btnAddSchedule, btnSaveSchedule;
     LinearLayout scheduleContainer;
 
     @Override
@@ -32,7 +23,7 @@ public class TimeActivity extends AppCompatActivity {
 
         btnAddSchedule = findViewById(R.id.btnAddSchedule);
         btnSaveSchedule = findViewById(R.id.btnSaveSchedule);
-        scheduleContainer = findViewById(R.id.scheduleContainer); // ⚠️ Bị thiếu dòng này
+        scheduleContainer = findViewById(R.id.scheduleContainer);
 
         btnAddSchedule.setOnClickListener(v -> {
             View scheduleView = LayoutInflater.from(this).inflate(R.layout.schedule_item, scheduleContainer, false);
@@ -42,16 +33,24 @@ public class TimeActivity extends AppCompatActivity {
         btnSaveSchedule.setOnClickListener(v -> {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference scheduleRef = database.getReference("schedule");
-            scheduleRef.removeValue(); // Xoá cũ nếu cần
+            scheduleRef.removeValue(); // Xoá dữ liệu cũ
 
             int count = scheduleContainer.getChildCount();
+            List<View> newViews = new ArrayList<>();
+
             for (int i = 0; i < count; i++) {
                 View scheduleView = scheduleContainer.getChildAt(i);
 
                 EditText edtDuration = scheduleView.findViewById(R.id.editDuration);
                 TimePicker timePicker = scheduleView.findViewById(R.id.timePickerStart);
 
-                CheckBox[] dayChecks = new CheckBox[]{
+                int hour = timePicker.getHour();
+                int minute = timePicker.getMinute();
+                String timeStart = String.format("%02d:%02d", hour, minute);
+
+                String duration = edtDuration.getText().toString();
+
+                CheckBox[] dayChecks = {
                         scheduleView.findViewById(R.id.checkMon),
                         scheduleView.findViewById(R.id.checkTue),
                         scheduleView.findViewById(R.id.checkWed),
@@ -61,7 +60,15 @@ public class TimeActivity extends AppCompatActivity {
                         scheduleView.findViewById(R.id.checkSun),
                 };
 
-                CheckBox[] zoneChecks = new CheckBox[]{
+                String[] dayKeys = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                List<String> days = new ArrayList<>();
+                for (int d = 0; d < dayChecks.length; d++) {
+                    if (dayChecks[d].isChecked()) {
+                        days.add(dayKeys[d]);
+                    }
+                }
+
+                CheckBox[] zoneChecks = {
                         scheduleView.findViewById(R.id.checkZone1),
                         scheduleView.findViewById(R.id.checkZone2),
                         scheduleView.findViewById(R.id.checkZone3),
@@ -69,41 +76,36 @@ public class TimeActivity extends AppCompatActivity {
                         scheduleView.findViewById(R.id.checkZone5),
                         scheduleView.findViewById(R.id.checkZone6),
                         scheduleView.findViewById(R.id.checkZone7),
-                        scheduleView.findViewById(R.id.checkZone8),
                 };
 
-                Map<String, Object> scheduleData = new HashMap<>();
-
-                // Lấy thời gian bắt đầu
-                int hour = timePicker.getHour();
-                int minute = timePicker.getMinute();
-                String timeStart = String.format("%02d:%02d", hour, minute);
-                scheduleData.put("startTime", timeStart);
-
-                // Thời lượng tưới
-                scheduleData.put("duration", edtDuration.getText().toString());
-
-                // Ngày lặp
-                List<String> days = new ArrayList<>();
-                String[] dayKeys = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-                for (int d = 0; d < dayChecks.length; d++) {
-                    if (dayChecks[d].isChecked()) {
-                        days.add(dayKeys[d]);
-                    }
-                }
-                scheduleData.put("repeatDays", days);
-
-                // Van tưới
-                List<String> enabledZones = new ArrayList<>();
+                List<String> zones = new ArrayList<>();
                 for (int z = 0; z < zoneChecks.length; z++) {
                     if (zoneChecks[z].isChecked()) {
-                        enabledZones.add("zone" + (z + 1));
+                        zones.add("zone" + (z + 1));
                     }
                 }
-                scheduleData.put("zones", enabledZones);
 
-                // Đẩy lên Firebase
+                // Push lên Firebase
+                Map<String, Object> scheduleData = new HashMap<>();
+                scheduleData.put("startTime", timeStart);
+                scheduleData.put("duration", duration);
+                scheduleData.put("repeatDays", days);
+                scheduleData.put("zones", zones);
+
                 scheduleRef.push().setValue(scheduleData);
+
+                // UI rút gọn lại
+                TextView item = new TextView(this);
+                item.setPadding(8, 8, 8, 8);
+                item.setBackgroundColor(0xFFE0F7FA);
+                item.setText("⏰ " + timeStart + " - " + duration + " phút\nVòi: " + zones + "\nNgày: " + days);
+                newViews.add(item);
+            }
+
+            // Xoá các layout gốc và hiển thị TextView đơn giản
+            scheduleContainer.removeAllViews();
+            for (View vs : newViews) {
+                scheduleContainer.addView(vs);
             }
 
             Toast.makeText(this, "Đã lưu lịch tưới", Toast.LENGTH_SHORT).show();
