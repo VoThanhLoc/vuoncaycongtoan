@@ -22,6 +22,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 public class LiveActivity extends AppCompatActivity {
 
     private final int BUTTON_COUNT = 8;
@@ -35,7 +43,7 @@ public class LiveActivity extends AppCompatActivity {
     private CardView[] cards = new CardView[BUTTON_COUNT];
     private TextView[] textViews = new TextView[BUTTON_COUNT];
     private boolean isWatering = false;
-
+    private long startMillis = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,9 +108,11 @@ public class LiveActivity extends AppCompatActivity {
             DatabaseReference irrigationRef = database.getReference("irrigation");
 
             if (!isWatering) {
-                // Bắt đầu tưới
+                // === BẮT ĐẦU TƯỚI ===
                 irrigationRef.child("start").setValue(true);
                 isWatering = true;
+
+                startMillis = System.currentTimeMillis(); // Lưu lại thời gian bắt đầu tưới
 
                 btnStartWatering.setText("Dừng tưới");
                 btnStartWatering.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.holo_red_dark));
@@ -110,9 +120,33 @@ public class LiveActivity extends AppCompatActivity {
 
                 Toast.makeText(this, "Bắt đầu tưới nước!", Toast.LENGTH_SHORT).show();
             } else {
-                // Dừng tưới
+                // === DỪNG TƯỚI ===
                 irrigationRef.child("start").setValue(false);
                 isWatering = false;
+
+                long endMillis = System.currentTimeMillis();
+                String startTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(startMillis));
+                String endTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(endMillis));
+                String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date(endMillis));
+
+                long durationMillis = endMillis - startMillis;
+                long durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis);
+                String duration = String.valueOf(durationMinutes);
+
+                // Ghi lịch sử vào Firebase
+                DatabaseReference historyRef = database.getReference("history").push();
+
+                Map<String, Object> history = new HashMap<>();
+                history.put("zones", Arrays.asList("Thủ công")); // Tùy chọn: hoặc lấy vùng từ trạng thái đang mở nếu có
+                history.put("startTime", startTime);
+                history.put("endTime", endTime);
+                history.put("duration", duration);
+                history.put("repeatDays", Arrays.asList()); // không áp dụng
+                history.put("status", "done");
+                history.put("timestamp", timestamp);
+                history.put("type", "Tưới Trực Tiếp");
+
+                historyRef.setValue(history);
 
                 btnStartWatering.setText("Bắt đầu tưới");
                 btnStartWatering.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.holo_green_dark));
@@ -123,7 +157,7 @@ public class LiveActivity extends AppCompatActivity {
         });
     }
 
-    private void updateCardUI(CardView card, TextView tv, boolean isOn, int index) {
+        private void updateCardUI(CardView card, TextView tv, boolean isOn, int index) {
         if (isOn) {
             card.setCardBackgroundColor(Color.parseColor("#A5D6A7"));
             tv.setText("ON");

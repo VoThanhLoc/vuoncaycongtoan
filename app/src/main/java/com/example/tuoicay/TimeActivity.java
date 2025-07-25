@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,10 +23,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
+import java.util.HashMap;
+import java.util.Map;
 public class TimeActivity extends AppCompatActivity {
     private LinearLayout zoneContainer, dayContainer;
     private TimePicker timePicker;
@@ -101,11 +106,88 @@ public class TimeActivity extends AppCompatActivity {
         String hour = String.format(Locale.getDefault(), "%02d:%02d",
                 timePicker.getHour(), timePicker.getMinute());
 
-        String duration = etDuration.getText().toString();
+        String duration = etDuration.getText().toString().trim();
+
+        // ✅ VALIDATE
+        if (selectedVans.isEmpty()) {
+            Toast.makeText(this, "Vui lòng chọn ít nhất một van tưới", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (duration.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập thời gian tưới (phút)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int dur = Integer.parseInt(duration);
+            if (dur <= 0) {
+                Toast.makeText(this, "Thời gian tưới phải lớn hơn 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Thời gian tưới phải là số hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (selectedDays.isEmpty()) {
+            Toast.makeText(this, "Vui lòng chọn ít nhất một ngày lặp lại", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String id = databaseRef.push().getKey();
         ScheduleModel schedule = new ScheduleModel(id, selectedVans, hour, duration, selectedDays, "off");
-        databaseRef.child(id).setValue(schedule);
+        databaseRef.child(id).setValue(schedule)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Đã thêm lịch tưới", Toast.LENGTH_SHORT).show();
+                    addHistory(schedule, "added"); // << Ghi vào lịch sử
+                    resetFields(); // Xóa chọn sau khi thêm
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi khi thêm lịch tưới", Toast.LENGTH_SHORT).show();
+                });
+    }
+    private void resetFields() {
+        // Bỏ chọn tất cả van
+        for (int i = 0; i < zoneContainer.getChildCount(); i++) {
+            CheckBox cb = (CheckBox) zoneContainer.getChildAt(i);
+            cb.setChecked(false);
+        }
+
+        // Bỏ chọn các ngày
+        for (int i = 0; i < dayContainer.getChildCount(); i++) {
+            CheckBox cb = (CheckBox) dayContainer.getChildAt(i);
+            cb.setChecked(false);
+        }
+
+        // Đặt lại giờ hiện tại
+        Calendar now = Calendar.getInstance();
+        timePicker.setHour(now.get(Calendar.HOUR_OF_DAY));
+        timePicker.setMinute(now.get(Calendar.MINUTE));
+
+        // Xóa nội dung thời lượng
+        etDuration.setText("");
+    }
+
+    private void addHistory(ScheduleModel schedule, String status) {
+        DatabaseReference historyRef = FirebaseDatabase.getInstance().getReference("history");
+        String historyId = historyRef.push().getKey();
+
+        Map<String, Object> historyData = new HashMap<>();
+        historyData.put("zones", schedule.getZone());
+        historyData.put("startTime", schedule.getStartTime());
+        historyData.put("duration", schedule.getDuration());
+        historyData.put("repeatDays", schedule.getRepeatDays());
+        historyData.put("status", status);
+        historyData.put("type", "Hẹn Giờ");
+
+        // Thêm timestamp
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        String timestamp = sdf.format(new Date());
+        historyData.put("timestamp", timestamp);
+
+        // Ghi vào Firebase
+        historyRef.child(historyId).setValue(historyData);
     }
 
     private void loadSchedulesFromFirebase() {
