@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     CardView btn_tuoilive;
     CardView btn_tuoitime;
     CardView btn_lichsu;
+    CardView btn_wifi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
         btn_tuoilive = findViewById(R.id.btn_tuoilive);
         btn_tuoitime = findViewById(R.id.btn_tuoitime);
         btn_lichsu = findViewById(R.id.btn_lichsu);
+        btn_wifi = findViewById(R.id.btn_wifi);
 
         //xử lý sự kiện khi nhấn icon
 
@@ -44,6 +46,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent= new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btn_wifi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,ConnectActivity.class);
                 startActivity(intent);
             }
         });
