@@ -1,137 +1,51 @@
-<!-- res/layout/schedule_item.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    android:background="#EEEEEE"
-    android:orientation="vertical"
-    android:padding="10dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Chọn van tưới:" />
+    android:background="#EEE">
 
     <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <CheckBox
-            android:id="@+id/checkZone1"
-            android:text="Van 1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tvZone"
+            android:text="Zone: Van1, Van3"
+            android:textStyle="bold"  android:layout_height="wrap_content" android:layout_width="match_parent"/>
 
-        <CheckBox
-            android:id="@+id/checkZone2"
-            android:text="Van 2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <CheckBox
-            android:id="@+id/checkZone3"
-            android:text="Van 3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <CheckBox
-            android:id="@+id/checkZone4"
-            android:text="Van 4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <CheckBox
-            android:id="@+id/checkZone5"
-            android:text="Van 5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <CheckBox
-            android:id="@+id/checkZone6"
-            android:text="Van 6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <CheckBox
-            android:id="@+id/checkZone7"
-            android:text="Van 7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <View
+            android:id="@+id/statusIndicator"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:background="@drawable/status_green"
+            android:layout_marginLeft="8dp"/>
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Thời gian bắt đầu:" />
-
-    <TimePicker
-        android:id="@+id/timePickerStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:timePickerMode="spinner" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tưới trong bao lâu (phút):" />
-
-    <EditText
-        android:id="@+id/editDuration"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lặp lại các ngày:" />
+    <TextView android:id="@+id/tvTime" android:text="Time: 06:00 - 10 phút"  android:layout_height="wrap_content" android:layout_width="match_parent"/>
+    <TextView android:id="@+id/tvDays" android:text="Days: Mon, Wed, Fri" android:layout_height="wrap_content" android:layout_width="match_parent"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <CheckBox
-            android:id="@+id/checkMon"
+        <Button
+            android:id="@+id/btnStop"
+            android:text="Dừng tưới"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:text="Xóa"
+            android:textColor="#FF0000"
+            android:backgroundTint="#FFFFFF"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="T2" />
-
-        <CheckBox
-            android:id="@+id/checkTue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T3" />
-
-        <CheckBox
-            android:id="@+id/checkWed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T4" />
-
-        <CheckBox
-            android:id="@+id/checkThu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T5" />
-
-        <CheckBox
-            android:id="@+id/checkFri"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T6" />
-
-        <CheckBox
-            android:id="@+id/checkSat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="T7" />
-
-        <CheckBox
-            android:id="@+id/checkSun"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CN" />
+            android:layout_marginLeft="8dp"/>
     </LinearLayout>
 </LinearLayout>

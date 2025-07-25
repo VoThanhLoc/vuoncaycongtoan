@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="@android:color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="2dp">
+
+    <TextView android:id="@+id/tvZone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Van: Van1, Van2"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView android:id="@+id/tvStartTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bắt đầu: 2025-07-24 06:00" />
+
+    <TextView android:id="@+id/tvDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Thời gian tưới: 10 phút" />
+
+    <TextView android:id="@+id/tvStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trạng thái: Thành công"
+        android:textColor="@android:color/holo_green_dark"/>
+</LinearLayout>

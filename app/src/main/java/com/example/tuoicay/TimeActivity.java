@@ -1,114 +1,125 @@
 package com.example.tuoicay;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TimePicker;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.tuoicay.R;
+import com.example.tuoicay.ScheduleAdapter;
+import com.example.tuoicay.ScheduleModel;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class TimeActivity extends AppCompatActivity {
-
-    Button btnAddSchedule, btnSaveSchedule;
-    LinearLayout scheduleContainer;
+    private LinearLayout zoneContainer, dayContainer;
+    private TimePicker timePicker;
+    private EditText etDuration;
+    private Button btnAddSchedule;
+    private RecyclerView scheduleRecyclerView;
+    private ScheduleAdapter adapter;
+    private List<ScheduleModel> scheduleList = new ArrayList<>();
+    private DatabaseReference databaseRef;
+    private ImageButton btn_Back;
+    private String[] vanOptions = {"Van1", "Van2", "Van3", "Van4", "Van5", "Van6", "Van7"};
+    private String[] dayOptions = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time);
 
+        zoneContainer = findViewById(R.id.zoneContainer);
+        dayContainer = findViewById(R.id.dayContainer);
+        timePicker = findViewById(R.id.timePicker);
+        etDuration = findViewById(R.id.etDuration);
         btnAddSchedule = findViewById(R.id.btnAddSchedule);
-        btnSaveSchedule = findViewById(R.id.btnSaveSchedule);
-        scheduleContainer = findViewById(R.id.scheduleContainer);
+        scheduleRecyclerView = findViewById(R.id.scheduleRecyclerView);
 
-        btnAddSchedule.setOnClickListener(v -> {
-            View scheduleView = LayoutInflater.from(this).inflate(R.layout.schedule_item, scheduleContainer, false);
-            scheduleContainer.addView(scheduleView);
-        });
+        databaseRef = FirebaseDatabase.getInstance().getReference("schedule");
 
-        btnSaveSchedule.setOnClickListener(v -> {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference scheduleRef = database.getReference("schedule");
-            scheduleRef.removeValue(); // Xoá dữ liệu cũ
+        setupCheckBoxes();
+        setupRecyclerView();
 
-            int count = scheduleContainer.getChildCount();
-            List<View> newViews = new ArrayList<>();
+        btnAddSchedule.setOnClickListener(v -> addSchedule());
 
-            for (int i = 0; i < count; i++) {
-                View scheduleView = scheduleContainer.getChildAt(i);
+        loadSchedulesFromFirebase();
 
-                EditText edtDuration = scheduleView.findViewById(R.id.editDuration);
-                TimePicker timePicker = scheduleView.findViewById(R.id.timePickerStart);
+        btn_Back = findViewById(R.id.btn_Back);
 
-                int hour = timePicker.getHour();
-                int minute = timePicker.getMinute();
-                String timeStart = String.format("%02d:%02d", hour, minute);
+        btn_Back.setOnClickListener(view -> finish());
+    }
 
-                String duration = edtDuration.getText().toString();
+    private void setupCheckBoxes() {
+        for (String van : vanOptions) {
+            CheckBox cb = new CheckBox(this);
+            cb.setText(van);
+            zoneContainer.addView(cb);
+        }
 
-                CheckBox[] dayChecks = {
-                        scheduleView.findViewById(R.id.checkMon),
-                        scheduleView.findViewById(R.id.checkTue),
-                        scheduleView.findViewById(R.id.checkWed),
-                        scheduleView.findViewById(R.id.checkThu),
-                        scheduleView.findViewById(R.id.checkFri),
-                        scheduleView.findViewById(R.id.checkSat),
-                        scheduleView.findViewById(R.id.checkSun),
-                };
+        for (String day : dayOptions) {
+            CheckBox cb = new CheckBox(this);
+            cb.setText(day);
+            dayContainer.addView(cb);
+        }
+    }
 
-                String[] dayKeys = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-                List<String> days = new ArrayList<>();
-                for (int d = 0; d < dayChecks.length; d++) {
-                    if (dayChecks[d].isChecked()) {
-                        days.add(dayKeys[d]);
-                    }
+    private void setupRecyclerView() {
+        adapter = new ScheduleAdapter(scheduleList, databaseRef);
+        scheduleRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        scheduleRecyclerView.setAdapter(adapter);
+    }
+
+    private void addSchedule() {
+        List<String> selectedVans = new ArrayList<>();
+        for (int i = 0; i < zoneContainer.getChildCount(); i++) {
+            CheckBox cb = (CheckBox) zoneContainer.getChildAt(i);
+            if (cb.isChecked()) selectedVans.add(cb.getText().toString());
+        }
+
+        List<String> selectedDays = new ArrayList<>();
+        for (int i = 0; i < dayContainer.getChildCount(); i++) {
+            CheckBox cb = (CheckBox) dayContainer.getChildAt(i);
+            if (cb.isChecked()) selectedDays.add(cb.getText().toString());
+        }
+
+        String hour = String.format(Locale.getDefault(), "%02d:%02d",
+                timePicker.getHour(), timePicker.getMinute());
+
+        String duration = etDuration.getText().toString();
+
+        String id = databaseRef.push().getKey();
+        ScheduleModel schedule = new ScheduleModel(id, selectedVans, hour, duration, selectedDays, "off");
+        databaseRef.child(id).setValue(schedule);
+    }
+
+    private void loadSchedulesFromFirebase() {
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                scheduleList.clear();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    ScheduleModel model = child.getValue(ScheduleModel.class);
+                    scheduleList.add(model);
                 }
-
-                CheckBox[] zoneChecks = {
-                        scheduleView.findViewById(R.id.checkZone1),
-                        scheduleView.findViewById(R.id.checkZone2),
-                        scheduleView.findViewById(R.id.checkZone3),
-                        scheduleView.findViewById(R.id.checkZone4),
-                        scheduleView.findViewById(R.id.checkZone5),
-                        scheduleView.findViewById(R.id.checkZone6),
-                        scheduleView.findViewById(R.id.checkZone7),
-                };
-
-                List<String> zones = new ArrayList<>();
-                for (int z = 0; z < zoneChecks.length; z++) {
-                    if (zoneChecks[z].isChecked()) {
-                        zones.add("zone" + (z + 1));
-                    }
-                }
-
-                // Push lên Firebase
-                Map<String, Object> scheduleData = new HashMap<>();
-                scheduleData.put("startTime", timeStart);
-                scheduleData.put("duration", duration);
-                scheduleData.put("repeatDays", days);
-                scheduleData.put("zones", zones);
-
-                scheduleRef.push().setValue(scheduleData);
-
-                // UI rút gọn lại
-                TextView item = new TextView(this);
-                item.setPadding(8, 8, 8, 8);
-                item.setBackgroundColor(0xFFE0F7FA);
-                item.setText("⏰ " + timeStart + " - " + duration + " phút\nVòi: " + zones + "\nNgày: " + days);
-                newViews.add(item);
+                adapter.notifyDataSetChanged();
             }
 
-            // Xoá các layout gốc và hiển thị TextView đơn giản
-            scheduleContainer.removeAllViews();
-            for (View vs : newViews) {
-                scheduleContainer.addView(vs);
-            }
-
-            Toast.makeText(this, "Đã lưu lịch tưới", Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 }
