@@ -41,6 +41,21 @@
         <activity android:name=".HistoryActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
+        <activity android:name=".NhaMainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".NhaLiveActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".NhaConnectActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".NhaHistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".NhaTimeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
     </application>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />

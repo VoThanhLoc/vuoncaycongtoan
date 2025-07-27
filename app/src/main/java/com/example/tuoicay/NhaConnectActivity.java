@@ -23,9 +23,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -34,20 +32,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConnectActivity extends AppCompatActivity {
-
+public class NhaConnectActivity extends AppCompatActivity {
     private WifiManager wifiManager;
     Spinner spinnerSSID;
     EditText editPassword;
     Button btnConnect;
-    Button  btnBack;
     private List<String> ssidList = new ArrayList<>();
     private ArrayAdapter<String> ssidAdapter;
-
+    Button  btnBack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_connect);
 
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -67,7 +62,7 @@ public class ConnectActivity extends AppCompatActivity {
 
         // Xin quyền vị trí (quét Wi-Fi cần quyền này)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         } else {
             scanWifi();
@@ -128,14 +123,14 @@ public class ConnectActivity extends AppCompatActivity {
     }
 
     private void saveToFirebase(String ssid, String password) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("wifi");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("wifihouse");
         Map<String, String> wifiInfo = new HashMap<>();
         wifiInfo.put("ssid", ssid);
         wifiInfo.put("password", password);
         dbRef.setValue(wifiInfo).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(this, "Đã lưu vào Firebase!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(ConnectActivity.this, HomeMainActivity.class);
+                Intent intent = new Intent(NhaConnectActivity.this, HomeMainActivity.class);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Lỗi lưu Firebase!", Toast.LENGTH_SHORT).show();

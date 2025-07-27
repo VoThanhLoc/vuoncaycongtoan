@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp">
+
     <!-- Tiêu đề và nút back -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="Kết Nối Mạng"
+            android:text="Kết nối mạng"
             android:textSize="20sp" />
     </LinearLayout>
     <!-- Spinner chọn Wi-Fi SSID -->

@@ -57,7 +57,7 @@
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 app:cardUseCompatPadding="true"
-                android:id="@+id/btn_tuoilive">
+                android:id="@+id/btn_nhalive">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -92,7 +92,7 @@
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 app:cardUseCompatPadding="true"
-                android:id="@+id/btn_tuoitime">
+                android:id="@+id/btn_nhatime">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -127,7 +127,7 @@
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 app:cardUseCompatPadding="true"
-                android:id="@+id/btn_lichsu">
+                android:id="@+id/btn_nhalichsu">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -161,7 +161,7 @@
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
                 app:cardUseCompatPadding="true"
-                android:id="@+id/btn_wifi">
+                android:id="@+id/btn_nhawifi">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
